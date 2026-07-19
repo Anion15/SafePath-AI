@@ -27,7 +27,7 @@
 
 기존 지도 서비스가 최단 거리 또는 최소 시간을 우선하는 것과 달리, SafePath AI는 **보행자의 안전을 최우선으로 고려하는 경로 탐색**을 목표로 합니다. 가로등, CCTV, 비상벨, 반사경 등 다양한 공공데이터를 기반으로 보행 환경을 분석하고 위험도를 시각화하여 더욱 안전한 이동을 지원합니다.
 
-> 이 리포지토리는 [LICENSE](https://github.com/Anion15/Eunbyeol.kr/blob/main/LICENSE)로 보호됩니다.<br>
+> 이 리포지토리는 [LICENSE](https://github.com/Anion15/SafePath-AI/blob/main/LICENSE)로 보호됩니다.<br>
 > 사용, 복사, 수정, 배포, 서브라이선스 관련 문의는 `juwony27@gmail.com`으로 부탁드립니다.
 
 <br>
