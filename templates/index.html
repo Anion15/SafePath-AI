@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel='icon' type="image/png" href="https://raw.githubusercontent.com/Anion15/anion15.github.io/refs/heads/main/image.png">
+    <link rel="icon" href="/favicon.ico">
+    
+    <title>SafePath AI - 안전 지도</title>
+
+    <meta name="description" content="SafePath는 안전한 경로 탐색을 위한 지도 서비스입니다. 위험도 지도를 기반으로 최적의 안전 경로를 제공합니다.">
+    <meta name="keywords" content="SafePath, 안전 지도, 경로 탐색, 위험도 지도, 안전한 길 찾기">
+    <meta name="author" content="윤주원">
+
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SafePath AI">
+    <meta property="og:title" content="SafePath AI - 안전 지도">
+    <meta property="og:description" content="SafePath는 안전한 경로 탐색을 위한 지도 서비스입니다. 위험도 지도를 기반으로 최적의 안전 경로를 제공합니다.">
+    <meta property="og:url" content="https://saftpath.rederx.com">
+
+    <meta property="og:image" content="https://raw.githubusercontent.com/Anion15/anion15.github.io/refs/heads/main/imagefull.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SafePath AI - 안전 지도">
+    <meta name="twitter:description" content="SafePath는 안전한 경로 탐색을 위한 지도 서비스입니다. 위험도 지도를 기반으로 최적의 안전 경로를 제공합니다.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/Anion15/anion15.github.io/refs/heads/main/imagefull.png">
+    <link rel="manifest" href="/manifest.json">
+    <div id="update-banner-container"></div>
+        <script type="application/ld+json">
+        {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "SafePath AI",
+        "alternateName": "SafePath AI - 안전 지도",
+        "url": "https://saftpath.rederx.com"
+        }
+        </script>
+    <meta property="og:image" content="https://raw.githubusercontent.com/Anion15/anion15.github.io/refs/heads/main/imagefull.png">
+    <meta property="og:url" content="https://saftpath.rederx.com">
+    <meta name="twitter:title" content="SafePath AI">
+    <meta name="twitter:description" content="SafePath는 안전한 경로 탐색을 위한 지도 서비스입니다. 위험도 지도를 기반으로 최적의 안전 경로를 제공합니다.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/Anion15/anion15.github.io/refs/heads/main/imagefull.png">
+    <meta name="twitter:card" content="summary_large_image">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/MarkerCluster.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/MarkerCluster.Default.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.5.1/leaflet.markercluster.min.js"></script>
+    
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://www.google.com/recaptcha/api.js?render="></script>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<script>
+(function () {
+
+
+  const params = new URLSearchParams(window.location.search);
+  const isForcedReload = params.has("__clr");
+
+  let reloadTimer;
+  let delayMessageTimer;
+
+  if (!isForcedReload) {
+
+    reloadTimer = setTimeout(() => {
+      const url = new URL(window.location.href);
+      url.searchParams.set("__clr", Date.now());
+      window.location.href = url.toString();
+    }, 5000);
+
+  } else {
+
+    delayMessageTimer = setTimeout(() => {
+      const msg = document.getElementById("__msg");
+      if (msg) {
+        msg.textContent =
+          "로딩이 지연되고 있습니다. 쿠키 삭제 후 새로고침을 시도해 주세요.";
+      }
+    }, 2500);
+
+  }
+
+  window.addEventListener("load", () => {
+    clearTimeout(reloadTimer);
+    clearTimeout(delayMessageTimer);
+  });
+
+
+  function hasCookie(name) {
+    return document.cookie
+      .split("; ")
+      .some(c => c.startsWith(name + "="));
+  }
+
+  function setCookie(name, value, days) {
+    var expires = "";
+    if (days) {
+      var d = new Date();
+      d.setTime(d.getTime() + days * 86400000);
+      expires = "; expires=" + d.toUTCString();
+    }
+    document.cookie = name + "=" + value + expires + "; path=/; SameSite=Lax";
+  }
+
+  if (!hasCookie("fvka")) {
+    setCookie("fvka", "1", 365);
+    location.reload();
+    return;
+  }
+
+  var isFirstVisit = !hasCookie("visited");
+  if (isFirstVisit) setCookie("visited", "1", 365);
+
+
+  var loadState = {
+    dom: false,
+    css: false,
+    js: false,
+    jsExec: false,
+    image: false,
+    complete: false
+  };
+
+  function getStageText() {
+    if (!loadState.dom) return "페이지 구조 해석 중";
+    if (!loadState.css) return "스타일시트 다운로드 중";
+    if (!loadState.js) return "스크립트 파일 불러오는 중";
+    if (!loadState.jsExec) return "기능 초기화 중";
+    if (!loadState.image) return "이미지 리소스 불러오는 중";
+    return "화면 준비 중";
+  }
+
+
+  var css = `
+  html.__no_scroll, html.__no_scroll body {
+    overflow: hidden !important;
+    height: 100%;
+  }
+
+  #__page_loader {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483647;
+    background: #0a0b0f;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity .6s ease;
+  }
+
+  #__loader_center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 380px;
+    max-width: 75vw;
+  }
+
+  #__big_logo {
+    width: 100%;
+  }
+
+  #__progress_wrap {
+    margin-top: 28px;
+    width: 100%;
+    height: 4px;
+    background: #ffffff22;
+    overflow: hidden;
+  }
+
+  #__progress_bar {
+    height: 100%;
+    width: 100%;
+    background: #fff;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path .15s linear;
+  }
+
+  #__step {
+    margin-top: 14px;
+    font: 500 12px system-ui;
+    opacity: .7;
+    color: #fff;
+    text-align: center;
+  }
+  
+  #__msg {
+    margin-top: 14px;
+    font: 500 12px system-ui;
+    opacity: .7;
+    color: #fff;
+    text-align: center;
+  }
+
+  #__credit {
+    position: absolute;
+    bottom: 30px;
+    font: 400 12px system-ui;
+    letter-spacing: 1px;
+    color: #ffffffcc;
+  }
+  `;
+
+  var styleEl = document.createElement("style");
+  styleEl.textContent = css;
+  document.head.appendChild(styleEl);
+
+
+  var overlay = document.createElement("div");
+  overlay.id = "__page_loader";
+
+  overlay.innerHTML = `
+    <div id="__loader_center">
+      <img id="__big_logo"
+        src="https://raw.githubusercontent.com/Anion15/anion15.github.io/refs/heads/main/imagefull.png" />
+      <div id="__progress_wrap">
+        <div id="__progress_bar"></div>
+      </div>
+      <div id="__step">초기화 중</div>
+      <div id="__msg"></div>
+    </div>
+    <div id="__credit">from developer yxbh.rh0</div>
+  `;
+
+  function mount() {
+    if (!document.body) return requestAnimationFrame(mount);
+    document.documentElement.classList.add("__no_scroll");
+    document.body.appendChild(overlay);
+  }
+  mount();
+
+
+  var bar, stepEl;
+  var resources = new Set();
+  var loaded = 0;
+
+  function update() {
+    bar ||= document.getElementById("__progress_bar");
+    stepEl ||= document.getElementById("__step");
+
+    var total = resources.size || 1;
+    var percent = Math.min(99, (loaded / total) * 100);
+
+    bar.style.clipPath = `inset(0 ${100 - percent}% 0 0)`;
+    stepEl.textContent = getStageText();
+  }
+
+  function detectType(name) {
+    if (name.match(/\.css($|\?)/)) return "css";
+    if (name.match(/\.js($|\?)/)) return "js";
+    if (name.match(/\.(png|jpg|jpeg|webp|svg)/)) return "image";
+    return null;
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    loadState.dom = true;
+    loadState.jsExec = true;
+    update();
+  });
+
+  performance.getEntriesByType("resource").forEach(e => {
+    resources.add(e.name);
+    var type = detectType(e.name);
+    if (type) loadState[type] = true;
+  });
+
+  var observer = new PerformanceObserver(list => {
+    list.getEntries().forEach(entry => {
+      if (!resources.has(entry.name)) {
+        resources.add(entry.name);
+        loaded++;
+      }
+      var type = detectType(entry.name);
+      if (type) loadState[type] = true;
+      update();
+    });
+  });
+
+  observer.observe({ entryTypes: ["resource"] });
+
+
+  window.addEventListener("load", async() => {
+
+    loadState.complete = true;
+    observer.disconnect();
+    bar.style.clipPath = "inset(0 0% 0 0)";
+
+    const logo = document.getElementById("__big_logo");
+
+    try {
+    if (logo && !logo.complete) {
+        await new Promise(resolve => {
+            logo.addEventListener("load", resolve, { once: true });
+            logo.addEventListener("error", resolve, { once: true });
+        });
+    }
+
+    if (logo && logo.decode) {
+        await logo.decode().catch(() => {});
+    }
+    } catch (_) {}
+    
+    setTimeout(() => {
+      overlay.style.opacity = "0";
+
+      setTimeout(() => {
+        overlay.remove();
+        styleEl.remove();
+        document.documentElement.classList.remove("__no_scroll");
+      }, 600);
+
+    }, 1000);
+  });
+
+})();
+</script>
+<body>
+    <div id="map"></div>
+    
+    <div id="loadingTop" class="loading-top hidden">
+        <div class="mini-spinner"></div>
+        <div style="display:flex;flex-direction:column;">
+            <div id="loadingTopText" style="font-weight:600; color:#333;">히트맵 계산 중...</div>
+            <div style="font-size:12px;color:#666;">진행: <span id="loadingTopProgress">0%</span></div>
+        </div>
+    </div>
+    <div id="routeControls" class="route-controls">
+        <div class="route-sheet-inner" id="routeSheetInner">
+            <div class="route-handle" id="routeHandle"></div>
+            <div class="route-sheet-body" id="routeSheetBody">
+                <div class="route-header">
+                    <div>
+                        <div class="route-title">경로 탐색</div>
+                        <div class="route-subtitle">내 위치, 주소 또는 지도 선택으로 출발/도착을 지정하세요.</div>
+                    </div>
+                    <button id="clearRouteBtn" class="btn btn-clear" title="경로 초기화">✕</button>
+                </div>
+                <div id="status" class="route-status" style="display: none;">위치 정보를 가져오는 중입니다...</div>
+
+                <label class="route-label">출발지</label>
+                <div class="input-group">
+                    <input id="startInput" placeholder="주소 또는 좌표를 입력하세요" />
+                    <button id="startMyLoc" class="btn btn-secondary">내 위치</button>
+                </div>
+
+                <label class="route-label">도착지</label>
+                <div class="input-group">
+                    <input id="endInput" placeholder="주소 또는 좌표를 입력하세요" />
+                    <button id="endMyLoc" class="btn btn-secondary">내 위치</button>
+                </div>
+
+                <div class="route-actions">
+                    <button id="pickStartBtn" class="btn btn-outline">출발지 선택</button>
+                    <button id="pickEndBtn" class="btn btn-outline">도착지 선택</button>
+                </div>
+
+                <div class="route-footer">
+                    <button id="findRouteBtn" class="btn btn-primary">안전 경로 찾기</button>
+                    <div id="routeInfo" class="route-info">거리와 안전도 정보가 여기에 표시됩니다.</div>
+                </div>
+                <div id="routeSummary" class="route-summary hidden">
+                    <div class="route-summary-header">
+                        <div class="route-summary-title">안전 경로 안내</div>
+                        <button id="closeRoutePanel" class="route-summary-close">경로 닫기</button>
+                    </div>
+                    <div class="route-summary-meta">
+                        <div><strong id="routeDistance">-</strong> / <span id="routeSafety">-</span></div>
+                        <div id="routeTime">예상 도보 시간과 구간 안내를 확인하세요.</div>
+                        <div id="routeHint" style="margin-top:6px; color:#475569;">첫 번째 이동 동작이 여기에 표시됩니다.</div>
+                    </div>
+                    <ul id="routeSteps" class="route-steps"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn btn-primary" id="locateBtn" title="내 위치로 이동">
+            <i class="fas fa-location-arrow"></i>
+        </button>
+        
+        <div id="datasetControls" style="background: white; padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); font-size: 12px; display: none;">
+            <div style="margin-bottom: 8px; font-weight: 600; color: #333;">안전 시설</div>
+            <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
+                <input type="checkbox" id="toggle-emergency_bell" checked style="margin-right: 8px;" />
+                <span>🚨 비상벨</span>
+            </label>
+            <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
+                <input type="checkbox" id="toggle-safe_place" checked style="margin-right: 8px;" />
+                <span>🏪 안심지킴이</span>
+            </label>
+            <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
+                <input type="checkbox" id="toggle-restroom" style="margin-right: 8px;" />
+                <span>🚻 공중화장실</span>
+            </label>
+            <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
+                <input type="checkbox" id="toggle-cctv" checked style="margin-right: 8px;" />
+                <span>📹 CCTV</span>
+            </label>
+            <label style="display: flex; align-items: center; margin: 5px 0; cursor: pointer;">
+                <input type="checkbox" id="toggle-seculight" checked style="margin-right: 8px;" />
+                <span>💡 보안등</span>
+            </label>
+        </div>
+        
+        <button class="btn" id="toggleDataset" title="표시할 시설 선택" style="display: none;">
+            ⚙️ 시설 선택
+        </button>
+    </div>
+    
+    <div class="info-box">
+        <h3>통계</h3>
+        <div class="info-stat">
+            <span class="info-label">총 안전 시설:</span>
+            <span class="info-value" id="totalData">-</span>
+        </div>
+        <div class="info-stat">
+            <span class="info-label">화면 표시:</span>
+            <span class="info-value" id="visibleData">-</span>
+        </div>
+        <div class="info-stat">
+            <span class="info-label">줌 레벨:</span>
+            <span class="info-value" id="zoomLevel">-</span>
+        </div>
+    </div>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <p style="margin-bottom: 15px;">데이터 다운로드 중...</p>
+        
+        <div style="background: rgba(255, 255, 255, 0.2); border-radius: 10px; height: 20px; width: 200px; overflow: hidden; margin: 0 auto;">
+            <div id="progressBar" style="background: #4CAF50; height: 100%; width: 0%; transition: width 0.3s ease; border-radius: 10px;"></div>
+        </div>
+        <p style="margin-top: 10px; font-size: 12px;" id="progressText">0/5 (0%)</p>
+    </div>
+    
+    <script src="/static/map-leaflet.js"></script>
+</body>
+</html>
