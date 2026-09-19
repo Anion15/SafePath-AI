@@ -20,7 +20,8 @@
 <p align="center">
   <a href="https://safepath.rederx.com"><strong>서비스</strong></a> ·
   <a href="https://youtu.be/2wB-GgalI78"><strong>소개영상</strong></a> ·
-  <a href="https://bit.ly/4hmddS1"><strong>결과보고서</strong></a>
+  <a href="https://bit.ly/4hmddS1"><strong>결과보고서</strong></a> ·
+  <a href="https://dev.rederx.com/blog/12"><strong>기술 스택</strong></a>
 </p>
 
 <br>
